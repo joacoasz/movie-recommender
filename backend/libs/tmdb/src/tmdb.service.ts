@@ -32,7 +32,19 @@ export class TmdbService {
       params: { page, language: 'es-ES' },
     });
 
-    return data.results.map((movie) => ({
+    return this.mapMovies(data.results);
+  }
+
+  async searchMovies(query: string, page = 1): Promise<TmdbMovie[]> {
+    const { data } = await this.client.get<{ results: TmdbApiMovie[] }>('/search/movie', {
+      params: { query, page, language: 'es-ES' },
+    });
+
+    return this.mapMovies(data.results);
+  }
+
+  private mapMovies(movies: TmdbApiMovie[]): TmdbMovie[] {
+    return movies.map((movie) => ({
       id: movie.id,
       title: movie.title,
       overview: movie.overview,

@@ -8,7 +8,7 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Get()
-  list(@Query('page') page?: string) {
-    return this.moviesService.list(page ? Number(page) : 1);
+  list(@Query('page') page?: string, @Query('query') query?: string) {
+    return this.moviesService.list(page ? Number(page) : 1, query);
   }
 }
