@@ -9,6 +9,13 @@ export interface TmdbMovie {
   posterPath: string | null;
 }
 
+interface TmdbApiMovie {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+}
+
 @Injectable()
 export class TmdbService {
   private readonly client: AxiosInstance;
@@ -21,7 +28,15 @@ export class TmdbService {
   }
 
   async listPopularMovies(page = 1): Promise<TmdbMovie[]> {
-    // TODO: GET /movie/popular?page={page} y mapear `results` a TmdbMovie[].
-    throw new Error(`Not implemented: listPopularMovies(${page})`);
+    const { data } = await this.client.get<{ results: TmdbApiMovie[] }>('/movie/popular', {
+      params: { page, language: 'es-ES' },
+    });
+
+    return data.results.map((movie) => ({
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      posterPath: movie.poster_path,
+    }));
   }
 }
