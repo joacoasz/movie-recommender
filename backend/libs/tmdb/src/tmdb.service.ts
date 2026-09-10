@@ -16,6 +16,26 @@ interface TmdbApiMovie {
   poster_path: string | null;
 }
 
+export interface TmdbMovieDetail {
+  id: number;
+  title: string;
+  overview: string;
+  posterPath: string | null;
+  backdropPath: string | null;
+  releaseDate: string | null;
+  runtimeMinutes: number | null;
+  genres: string[];
+  voteAverage: number;
+}
+
+interface TmdbApiMovieDetail extends TmdbApiMovie {
+  backdrop_path: string | null;
+  release_date: string | null;
+  runtime: number | null;
+  genres: { id: number; name: string }[];
+  vote_average: number;
+}
+
 @Injectable()
 export class TmdbService {
   private readonly client: AxiosInstance;
@@ -41,6 +61,24 @@ export class TmdbService {
     });
 
     return this.mapMovies(data.results);
+  }
+
+  async getMovieDetails(id: number): Promise<TmdbMovieDetail> {
+    const { data } = await this.client.get<TmdbApiMovieDetail>(`/movie/${id}`, {
+      params: { language: 'es-ES' },
+    });
+
+    return {
+      id: data.id,
+      title: data.title,
+      overview: data.overview,
+      posterPath: data.poster_path,
+      backdropPath: data.backdrop_path,
+      releaseDate: data.release_date,
+      runtimeMinutes: data.runtime,
+      genres: data.genres.map((genre) => genre.name),
+      voteAverage: data.vote_average,
+    };
   }
 
   private mapMovies(movies: TmdbApiMovie[]): TmdbMovie[] {

@@ -12,4 +12,8 @@ export class MoviesService {
 
     return this.tmdbService.listPopularMovies(page);
   }
+
+  getDetails(id: number) {
+    return this.tmdbService.getMovieDetails(id);
+  }
 }

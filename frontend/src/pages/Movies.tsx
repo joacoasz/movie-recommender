@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { api } from '../services/api';
+import { MovieDetailModal } from '../components/MovieDetailModal';
 
 interface Movie {
   id: number;
@@ -17,6 +18,7 @@ export function Movies() {
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
@@ -38,7 +40,8 @@ export function Movies() {
     return () => clearTimeout(timeoutId);
   }, [search]);
 
-  const like = async (movie: Movie) => {
+  const like = async (event: MouseEvent, movie: Movie) => {
+    event.stopPropagation();
     await api.post('/likes', {
       tmdbMovieId: movie.id,
       title: movie.title,
@@ -72,7 +75,7 @@ export function Movies() {
         {movies.map((movie) => {
           const liked = likedIds.has(movie.id);
           return (
-            <div className="movie-card" key={movie.id}>
+            <div className="movie-card" key={movie.id} onClick={() => setSelectedMovieId(movie.id)}>
               {movie.posterPath ? (
                 <img
                   className="movie-poster"
@@ -88,7 +91,7 @@ export function Movies() {
                 <button
                   className={`btn btn-small ${liked ? 'btn-liked' : 'btn-primary'}`}
                   disabled={liked}
-                  onClick={() => like(movie)}
+                  onClick={(event) => like(event, movie)}
                 >
                   {liked ? '✓ Agregada' : 'Me gusta'}
                 </button>
@@ -97,6 +100,9 @@ export function Movies() {
           );
         })}
       </div>
+      {selectedMovieId && (
+        <MovieDetailModal movieId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />
+      )}
     </section>
   );
 }

@@ -244,6 +244,13 @@ input:focus {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(30, 64, 175, 0.18);
 }
 
 .movie-poster {
@@ -368,6 +375,92 @@ input:focus {
   color: var(--color-danger);
 }
 
+.badge-genre {
+  background: #dbeafe;
+  color: var(--color-primary-dark);
+}
+
+/* Movie detail modal */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.modal-content {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.modal-poster {
+  flex: 0 0 200px;
+  width: 200px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--color-border);
+}
+
+.modal-info {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.modal-info h2 {
+  margin: 0;
+}
+
+.modal-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.modal-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.modal-overview {
+  color: var(--color-text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 @media (max-width: 480px) {
   .page {
     padding: 1rem 0.75rem 2rem;
@@ -375,5 +468,16 @@ input:focus {
 
   .auth-card {
     padding: 1.5rem;
+  }
+
+  .modal-content {
+    flex-direction: column;
+    max-height: 85vh;
+  }
+
+  .modal-poster {
+    width: 100%;
+    flex-basis: auto;
+    max-height: 260px;
   }
 }
