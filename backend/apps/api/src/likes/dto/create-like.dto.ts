@@ -2,10 +2,10 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateLikeDto {
   @IsInt()
-  tmdbMovieId: number;
+  tmdbMovieId!: number;
 
   @IsString()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsString()

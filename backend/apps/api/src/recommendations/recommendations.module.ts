@@ -16,7 +16,7 @@ import { RecommendationsService } from './recommendations.service';
         useFactory: (config: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [config.get<string>('RABBITMQ_URL')],
+            urls: [config.getOrThrow<string>('RABBITMQ_URL')],
             queue: 'recommendations',
             queueOptions: { durable: true },
           },

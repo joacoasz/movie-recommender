@@ -9,21 +9,21 @@
     "target": "ES2022",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/database": ["libs/database/src"],
-      "@app/database/*": ["libs/database/src/*"],
-      "@app/groq": ["libs/groq/src"],
-      "@app/groq/*": ["libs/groq/src/*"],
-      "@app/tmdb": ["libs/tmdb/src"],
-      "@app/tmdb/*": ["libs/tmdb/src/*"]
+      "@app/database": ["./libs/database/src"],
+      "@app/database/*": ["./libs/database/src/*"],
+      "@app/groq": ["./libs/groq/src"],
+      "@app/groq/*": ["./libs/groq/src/*"],
+      "@app/tmdb": ["./libs/tmdb/src"],
+      "@app/tmdb/*": ["./libs/tmdb/src/*"]
     }
   }
 }
