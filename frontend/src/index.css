@@ -305,6 +305,16 @@ input:focus {
   gap: 1rem;
 }
 
+.recommendation-card-clickable {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.recommendation-card-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(30, 64, 175, 0.18);
+}
+
 .recommendation-poster {
   flex: 0 0 90px;
   width: 90px;
@@ -329,12 +339,6 @@ input:focus {
 .recommendation-reason {
   color: var(--color-text-muted);
   font-size: 0.9rem;
-}
-
-.recommendation-overview {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-  line-height: 1.4;
 }
 
 @media (max-width: 480px) {

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { api } from '../services/api';
+import { MovieDetailModal } from '../components/MovieDetailModal';
 
 interface Like {
   id: string;
@@ -12,6 +13,7 @@ const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w342';
 
 export function Likes() {
   const [likes, setLikes] = useState<Like[]>([]);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   const load = () => {
     api.get<Like[]>('/likes').then((res) => setLikes(res.data));
@@ -21,7 +23,8 @@ export function Likes() {
     load();
   }, []);
 
-  const remove = async (tmdbMovieId: number) => {
+  const remove = async (event: MouseEvent, tmdbMovieId: number) => {
+    event.stopPropagation();
     await api.delete(`/likes/${tmdbMovieId}`);
     load();
   };
@@ -36,7 +39,7 @@ export function Likes() {
       ) : (
         <div className="card-grid">
           {likes.map((like) => (
-            <div className="movie-card" key={like.id}>
+            <div className="movie-card" key={like.id} onClick={() => setSelectedMovieId(like.tmdbMovieId)}>
               {like.posterPath ? (
                 <img
                   className="movie-poster"
@@ -49,13 +52,16 @@ export function Likes() {
               )}
               <div className="movie-body">
                 <span className="movie-title">{like.title}</span>
-                <button className="btn btn-danger btn-small" onClick={() => remove(like.tmdbMovieId)}>
+                <button className="btn btn-danger btn-small" onClick={(event) => remove(event, like.tmdbMovieId)}>
                   Quitar
                 </button>
               </div>
             </div>
           ))}
         </div>
+      )}
+      {selectedMovieId && (
+        <MovieDetailModal movieId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />
       )}
     </section>
   );
