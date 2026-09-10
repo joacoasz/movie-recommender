@@ -23,20 +23,34 @@ export function Register() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Crear cuenta</h1>
-      <input placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} />
-      <input
-        placeholder="Contraseña"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {error && <p role="alert">{error}</p>}
-      <button type="submit">Registrarme</button>
-      <p>
-        ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
-      </p>
-    </form>
+    <div className="auth-page">
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <h1>Crear cuenta</h1>
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="field">
+          <label htmlFor="username">Usuario</label>
+          <input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button className="btn btn-primary btn-block" type="submit">
+          Registrarme
+        </button>
+        <p className="auth-switch">
+          ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
+        </p>
+      </form>
+    </div>
   );
 }

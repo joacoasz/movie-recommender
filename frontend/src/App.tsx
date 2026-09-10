@@ -12,17 +12,19 @@ export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <NavBar />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/likes" element={<Likes />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/movies" replace />} />
-        </Routes>
+        <div className="app-shell">
+          <NavBar />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/movies" element={<Movies />} />
+              <Route path="/likes" element={<Likes />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/movies" replace />} />
+          </Routes>
+        </div>
       </AuthProvider>
     </BrowserRouter>
   );

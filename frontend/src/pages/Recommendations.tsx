@@ -9,8 +9,21 @@ interface Recommendation {
   createdAt: string;
 }
 
+const STATUS_LABEL: Record<Recommendation['status'], string> = {
+  PENDING: 'Generando',
+  COMPLETED: 'Lista',
+  FAILED: 'Falló',
+};
+
+const STATUS_BADGE_CLASS: Record<Recommendation['status'], string> = {
+  PENDING: 'badge-pending',
+  COMPLETED: 'badge-completed',
+  FAILED: 'badge-failed',
+};
+
 export function Recommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [requesting, setRequesting] = useState(false);
 
   const load = () => {
     api.get<Recommendation[]>('/recommendations').then((res) => setRecommendations(res.data));
@@ -21,22 +34,36 @@ export function Recommendations() {
   }, []);
 
   const requestRecommendation = async () => {
-    await api.post('/recommendations');
-    load();
+    setRequesting(true);
+    try {
+      await api.post('/recommendations');
+      load();
+    } finally {
+      setRequesting(false);
+    }
   };
 
   return (
-    <section>
-      <h1>Recomendaciones</h1>
-      <button onClick={requestRecommendation}>Pedir una recomendación</button>
-      <ul>
-        {recommendations.map((rec) => (
-          <li key={rec.id}>
-            [{rec.status}] {rec.title ?? 'Generando...'}
-            {rec.reason ? ` — ${rec.reason}` : ''}
-          </li>
-        ))}
-      </ul>
+    <section className="page">
+      <div className="page-header">
+        <h1>Recomendaciones</h1>
+        <button className="btn btn-primary" onClick={requestRecommendation} disabled={requesting}>
+          {requesting ? 'Solicitando...' : 'Pedir una recomendación'}
+        </button>
+      </div>
+      {recommendations.length === 0 ? (
+        <p className="empty-state">Todavía no pediste ninguna recomendación.</p>
+      ) : (
+        <div className="recommendation-list">
+          {recommendations.map((rec) => (
+            <div className="recommendation-card" key={rec.id}>
+              <span className={`badge ${STATUS_BADGE_CLASS[rec.status]}`}>{STATUS_LABEL[rec.status]}</span>
+              <span className="recommendation-title">{rec.title ?? 'Generando recomendación...'}</span>
+              {rec.reason && <span className="recommendation-reason">{rec.reason}</span>}
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

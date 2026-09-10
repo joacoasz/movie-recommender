@@ -9,11 +9,16 @@ export function NavBar() {
   }
 
   return (
-    <nav>
-      <Link to="/movies">Películas</Link>
-      <Link to="/likes">Me gusta</Link>
-      <Link to="/recommendations">Recomendaciones</Link>
-      <button onClick={logout}>Salir</button>
+    <nav className="navbar">
+      <span className="navbar-brand">🎬 Movie Recommender</span>
+      <div className="navbar-links">
+        <Link to="/movies">Películas</Link>
+        <Link to="/likes">Me gusta</Link>
+        <Link to="/recommendations">Recomendaciones</Link>
+        <button className="btn btn-outline btn-small" onClick={logout}>
+          Salir
+        </button>
+      </div>
     </nav>
   );
 }
