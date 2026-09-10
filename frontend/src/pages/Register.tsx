@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { AuthLayout } from '../components/AuthLayout';
 
 export function Register() {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ export function Register() {
   };
 
   return (
-    <div className="auth-page">
+    <AuthLayout>
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Crear cuenta</h1>
         {error && (
@@ -51,6 +52,6 @@ export function Register() {
           ¿Ya tenés cuenta? <Link to="/login">Iniciá sesión</Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
