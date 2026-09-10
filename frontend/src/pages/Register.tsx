@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { api, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export function Register() {
@@ -17,8 +17,8 @@ export function Register() {
       const { data } = await api.post('/auth/register', { username, password });
       login(data.accessToken);
       navigate('/movies');
-    } catch {
-      setError('No se pudo crear la cuenta. ¿El usuario ya existe?');
+    } catch (err) {
+      setError(getErrorMessage(err, 'No se pudo crear la cuenta'));
     }
   };
 

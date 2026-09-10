@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
@@ -11,3 +11,25 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+interface ApiErrorBody {
+  message?: string | string[];
+}
+
+export function getErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError<ApiErrorBody>(error)) {
+    if (!error.response) {
+      return 'No se pudo conectar con el servidor. Probá de nuevo en unos segundos.';
+    }
+
+    const { message } = error.response.data ?? {};
+    if (Array.isArray(message)) {
+      return message.join('. ');
+    }
+    if (typeof message === 'string') {
+      return message;
+    }
+  }
+
+  return fallback;
+}

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { api, getErrorMessage } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export function Login() {
@@ -17,8 +17,8 @@ export function Login() {
       const { data } = await api.post('/auth/login', { username, password });
       login(data.accessToken);
       navigate('/movies');
-    } catch {
-      setError('Usuario o contraseña incorrectos');
+    } catch (err) {
+      setError(getErrorMessage(err, 'Usuario o contraseña incorrectos'));
     }
   };
 
