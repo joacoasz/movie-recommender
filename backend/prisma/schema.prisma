@@ -43,6 +43,8 @@ model Recommendation {
   tmdbMovieId Int?
   title       String?
   reason      String?
+  posterPath  String?
+  overview    String?
   createdAt   DateTime             @default(now())
   completedAt DateTime?
 

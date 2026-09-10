@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { PrismaService } from '@app/database';
 import { GroqService } from '@app/groq';
+import { TmdbService } from '@app/tmdb';
 import { RecommendationRateLimiterService } from './recommendation-rate-limiter.service';
 
 interface RecommendationRequestedEvent {
@@ -14,6 +15,7 @@ export class RecommendationConsumerController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly groqService: GroqService,
+    private readonly tmdbService: TmdbService,
     private readonly rateLimiter: RecommendationRateLimiterService,
   ) {}
 
@@ -39,12 +41,17 @@ export class RecommendationConsumerController {
         likedMovies: user.likes.map((like) => ({ title: like.title })),
       });
 
+      const [match] = await this.tmdbService.searchMovies(result.title).catch(() => []);
+
       await this.prisma.recommendation.update({
         where: { id: recommendationId },
         data: {
           status: 'COMPLETED',
           title: result.title,
           reason: result.reason,
+          tmdbMovieId: match?.id,
+          posterPath: match?.posterPath,
+          overview: match?.overview,
           completedAt: new Date(),
         },
       });

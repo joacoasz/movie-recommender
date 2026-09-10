@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '../services/api';
 
 interface Movie {
@@ -16,8 +16,14 @@ export function Movies() {
   const [error, setError] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const isFirstLoad = useRef(true);
 
   useEffect(() => {
+    setLoading(true);
+    const delay = isFirstLoad.current ? 0 : SEARCH_DEBOUNCE_MS;
+    isFirstLoad.current = false;
+
     const timeoutId = setTimeout(() => {
       api
         .get<Movie[]>('/movies', { params: search ? { query: search } : {} })
@@ -25,8 +31,9 @@ export function Movies() {
           setMovies(res.data);
           setError(null);
         })
-        .catch(() => setError('No se pudieron cargar las películas'));
-    }, SEARCH_DEBOUNCE_MS);
+        .catch(() => setError('No se pudieron cargar las películas'))
+        .finally(() => setLoading(false));
+    }, delay);
 
     return () => clearTimeout(timeoutId);
   }, [search]);
@@ -57,7 +64,8 @@ export function Movies() {
           {error}
         </p>
       )}
-      {!error && movies.length === 0 && (
+      {loading && <p className="empty-state">Cargando películas...</p>}
+      {!loading && !error && movies.length === 0 && (
         <p className="empty-state">No se encontraron películas para "{search}".</p>
       )}
       <div className="card-grid">

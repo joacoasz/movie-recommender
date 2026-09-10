@@ -295,8 +295,23 @@ input:focus {
   box-shadow: var(--shadow);
   padding: 1rem 1.25rem;
   display: flex;
+  gap: 1rem;
+}
+
+.recommendation-poster {
+  flex: 0 0 90px;
+  width: 90px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--color-border);
+}
+
+.recommendation-body {
+  display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  min-width: 0;
 }
 
 .recommendation-title {
@@ -307,6 +322,24 @@ input:focus {
 .recommendation-reason {
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+.recommendation-overview {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .recommendation-card {
+    flex-direction: column;
+  }
+
+  .recommendation-poster {
+    width: 100%;
+    flex-basis: auto;
+    max-width: 140px;
+  }
 }
 
 .badge {

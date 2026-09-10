@@ -6,8 +6,12 @@ interface Recommendation {
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   title: string | null;
   reason: string | null;
+  posterPath: string | null;
+  overview: string | null;
   createdAt: string;
 }
+
+const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w185';
 
 const STATUS_LABEL: Record<Recommendation['status'], string> = {
   PENDING: 'Generando',
@@ -57,9 +61,22 @@ export function Recommendations() {
         <div className="recommendation-list">
           {recommendations.map((rec) => (
             <div className="recommendation-card" key={rec.id}>
-              <span className={`badge ${STATUS_BADGE_CLASS[rec.status]}`}>{STATUS_LABEL[rec.status]}</span>
-              <span className="recommendation-title">{rec.title ?? 'Generando recomendación...'}</span>
-              {rec.reason && <span className="recommendation-reason">{rec.reason}</span>}
+              {rec.posterPath ? (
+                <img
+                  className="recommendation-poster"
+                  src={`${TMDB_IMAGE_BASE}${rec.posterPath}`}
+                  alt={rec.title ?? ''}
+                  loading="lazy"
+                />
+              ) : (
+                <div className="recommendation-poster" />
+              )}
+              <div className="recommendation-body">
+                <span className={`badge ${STATUS_BADGE_CLASS[rec.status]}`}>{STATUS_LABEL[rec.status]}</span>
+                <span className="recommendation-title">{rec.title ?? 'Generando recomendación...'}</span>
+                {rec.reason && <span className="recommendation-reason">{rec.reason}</span>}
+                {rec.overview && <span className="recommendation-overview">{rec.overview}</span>}
+              </div>
             </div>
           ))}
         </div>
