@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  likes           Like[]
+  recommendations Recommendation[]
+}
+
+model Like {
+  id          String   @id @default(uuid())
+  userId      String
+  tmdbMovieId Int
+  title       String
+  posterPath  String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tmdbMovieId])
+}
+
+enum RecommendationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Recommendation {
+  id          String               @id @default(uuid())
+  userId      String
+  status      RecommendationStatus @default(PENDING)
+  tmdbMovieId Int?
+  title       String?
+  reason      String?
+  createdAt   DateTime             @default(now())
+  completedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
