@@ -13,6 +13,7 @@ interface Recommendation {
 }
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w185';
+const POLL_INTERVAL_MS = 3000;
 
 const STATUS_LABEL: Record<Recommendation['status'], string> = {
   PENDING: 'Generando',
@@ -38,6 +39,16 @@ export function Recommendations() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    const hasPending = recommendations.some((rec) => rec.status === 'PENDING');
+    if (!hasPending) {
+      return;
+    }
+
+    const intervalId = setInterval(load, POLL_INTERVAL_MS);
+    return () => clearInterval(intervalId);
+  }, [recommendations]);
 
   const requestRecommendation = async () => {
     setRequesting(true);
