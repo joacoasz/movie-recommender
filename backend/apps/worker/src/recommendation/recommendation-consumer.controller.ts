@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { PrismaService } from '@app/database';
+import { PrismaService, RECOMMENDATION_UPDATES_CHANNEL } from '@app/database';
 import { GroqService } from '@app/groq';
 import { TmdbService } from '@app/tmdb';
 import { RecommendationRateLimiterService } from './recommendation-rate-limiter.service';
@@ -8,6 +8,17 @@ import { RecommendationRateLimiterService } from './recommendation-rate-limiter.
 interface RecommendationRequestedEvent {
   recommendationId: string;
   userId: string;
+}
+
+interface UpdatedRecommendation {
+  id: string;
+  userId: string;
+  status: string;
+  title: string | null;
+  reason: string | null;
+  posterPath: string | null;
+  tmdbMovieId: number | null;
+  overview: string | null;
 }
 
 @Controller()
@@ -43,7 +54,7 @@ export class RecommendationConsumerController {
 
       const [match] = await this.tmdbService.searchMovies(result.title).catch(() => []);
 
-      await this.prisma.recommendation.update({
+      const updated = await this.prisma.recommendation.update({
         where: { id: recommendationId },
         data: {
           status: 'COMPLETED',
@@ -55,11 +66,17 @@ export class RecommendationConsumerController {
           completedAt: new Date(),
         },
       });
+      await this.notifyRecommendationUpdated(updated);
     } catch {
-      await this.prisma.recommendation.update({
+      const updated = await this.prisma.recommendation.update({
         where: { id: recommendationId },
         data: { status: 'FAILED', completedAt: new Date() },
       });
+      await this.notifyRecommendationUpdated(updated);
     }
+  }
+
+  private async notifyRecommendationUpdated(recommendation: UpdatedRecommendation) {
+    await this.prisma.$executeRaw`SELECT pg_notify(${RECOMMENDATION_UPDATES_CHANNEL}, ${JSON.stringify(recommendation)})`;
   }
 }

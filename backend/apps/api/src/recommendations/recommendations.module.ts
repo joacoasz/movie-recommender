@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
 import { RecommendationsController } from './recommendations.controller';
 import { RecommendationsService } from './recommendations.service';
+import { RecommendationEventsService } from './recommendation-events.service';
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { RecommendationsService } from './recommendations.service';
     ]),
   ],
   controllers: [RecommendationsController],
-  providers: [RecommendationsService],
+  providers: [RecommendationsService, RecommendationEventsService],
 })
 export class RecommendationsModule {}

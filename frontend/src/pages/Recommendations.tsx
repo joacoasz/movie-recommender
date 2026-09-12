@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { api, API_URL } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { MovieDetailModal } from '../components/MovieDetailModal';
 
 interface Recommendation {
@@ -13,7 +14,6 @@ interface Recommendation {
 }
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w185';
-const POLL_INTERVAL_MS = 3000;
 
 const STATUS_LABEL: Record<Recommendation['status'], string> = {
   PENDING: 'Generando',
@@ -28,6 +28,7 @@ const STATUS_BADGE_CLASS: Record<Recommendation['status'], string> = {
 };
 
 export function Recommendations() {
+  const { token } = useAuth();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [requesting, setRequesting] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
@@ -41,14 +42,26 @@ export function Recommendations() {
   }, []);
 
   useEffect(() => {
-    const hasPending = recommendations.some((rec) => rec.status === 'PENDING');
-    if (!hasPending) {
+    if (!token) {
       return;
     }
 
-    const intervalId = setInterval(load, POLL_INTERVAL_MS);
-    return () => clearInterval(intervalId);
-  }, [recommendations]);
+    // EventSource no permite mandar headers custom, así que el JWT va por query
+    // param en vez de Authorization (ver JwtStrategy en el backend).
+    const eventSource = new EventSource(`${API_URL}/recommendations/stream?token=${token}`);
+
+    eventSource.onmessage = (event) => {
+      const updated: Recommendation = JSON.parse(event.data);
+      setRecommendations((prev) => prev.map((rec) => (rec.id === updated.id ? updated : rec)));
+    };
+
+    // Postgres NOTIFY es fire-and-forget: si el stream se reconecta después de
+    // haber estado caído, puede haberse perdido algún evento. Un refetch al
+    // abrir la conexión reconcilia el estado sin volver a hacer polling.
+    eventSource.onopen = load;
+
+    return () => eventSource.close();
+  }, [token]);
 
   const requestRecommendation = async () => {
     setRequesting(true);
